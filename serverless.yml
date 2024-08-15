@@ -1,0 +1,31 @@
+service: step-functions-guide
+
+plugins:
+  - serverless-step-functions
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: dev
+
+functions:
+  Start:
+    handler: handler.start
+
+stepFunctions:
+  stateMachines:
+    apiGatewayTrigger:
+      name: api-gateway-trigger
+      events:
+        - http:
+            path: /dosomething
+            method: POST
+      definition:
+        Comment: Demonstrate how API Gateway integration works
+        StartAt: DoSomething
+        States:
+          DoSomething:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [Start, Arn]
+            End: true
